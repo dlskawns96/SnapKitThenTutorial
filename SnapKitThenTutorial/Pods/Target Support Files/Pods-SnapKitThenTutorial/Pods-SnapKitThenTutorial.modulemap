@@ -1,0 +1,6 @@
+framework module Pods_SnapKitThenTutorial {
+  umbrella header "Pods-SnapKitThenTutorial-umbrella.h"
+
+  export *
+  module * { export * }
+}
