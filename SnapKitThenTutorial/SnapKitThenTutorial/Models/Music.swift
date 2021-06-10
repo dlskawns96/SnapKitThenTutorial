@@ -9,7 +9,8 @@ import Foundation
 
 struct Music {
     var isPlaying: Bool
-    let data: MusicData
+    var data: MusicData
+    var lyrics: [ProcessedLyric]
 }
 
 struct MusicData: Codable {
@@ -20,4 +21,10 @@ struct MusicData: Codable {
     let image: String
     let file: String
     let lyrics: String
+//    let processedLyrics: [Double:String]
+}
+
+struct ProcessedLyric {
+    let timeInterval: Int
+    let text: String
 }

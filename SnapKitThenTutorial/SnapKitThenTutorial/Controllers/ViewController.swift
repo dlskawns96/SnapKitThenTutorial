@@ -12,7 +12,7 @@ import Then
 class ViewController: UIViewController {
     
     private var musicViewModel: MusicViewModel!
-    private var dataSource: MusicData!
+    private var dataSource: Music!
     private var playingScreen: PlayingScreen?
     
     override func viewDidLoad() {
@@ -24,17 +24,17 @@ class ViewController: UIViewController {
     func callToViewModelForUIUpdate() {
         self.musicViewModel = MusicViewModel()
         self.musicViewModel.bindMusicViewModelToController = { [self] in
-            self.dataSource = musicViewModel.musicData
+            self.dataSource = musicViewModel.music
             self.updateDataSource()
         }
     }
     
     func updateDataSource() {
         if playingScreen == nil {
-            playingScreen = PlayingScreen(musicData: dataSource, view: view)
+            playingScreen = PlayingScreen(music: dataSource, view: view)
             configureUI()
         } else {
-            playingScreen?.update(musicData: dataSource)
+            playingScreen?.update(music: dataSource)
         }
     }
     
@@ -57,7 +57,9 @@ class ViewController: UIViewController {
         }
         playingScreen?.lyrics.snp.makeConstraints {
             $0.top.equalTo((playingScreen?.image)!).offset(25)
-            $0.centerX.equalToSuperview()
+            
+            $0.leading.equalToSuperview().offset(10)
+            $0.trailing.equalToSuperview().inset(10)
         }
     }
     
@@ -70,43 +72,49 @@ struct PlayingScreen {
     var albumLabel: UILabel
     var lyrics: UITextView
     
-    init(musicData: MusicData, view: UIView) {
+    init(music: Music, view: UIView) {
         titleLabel = UILabel().then {
             view.addSubview($0)
-            $0.text = musicData.title
+            $0.text = music.data.title
             $0.font = $0.font.withSize(20)
         }
         singerLabel = UILabel().then {
             view.addSubview($0)
-            $0.text = musicData.singer
+            $0.text = music.data.singer
         }
         
-        let url = URL(string: musicData.image)
+        let url = URL(string: music.data.image)
         image = UIImageView().then {
             view.addSubview($0)
             if let data = try? Data(contentsOf: url!) {
                 $0.image = UIImage(data: data)
+                $0.layer.cornerRadius = 10
+                $0.layer.masksToBounds = true
             }
             
         }
         albumLabel = UILabel().then {
             view.addSubview($0)
-            $0.text = musicData.album
+            $0.text = music.data.album
         }
         lyrics = UITextView().then {
             view.addSubview($0)
-            $0.text = musicData.lyrics
+            $0.backgroundColor = .yellow
+            $0.text = music.data.lyrics
+            $0.font = UIFont.systemFont(ofSize: 15)
+            $0.textContainer.maximumNumberOfLines = 2
+            
         }
     }
     
-    func update(musicData: MusicData) {
-        titleLabel.text = musicData.title
-        singerLabel.text = musicData.singer
-        let url = URL(string: musicData.image)
+    func update(music: Music) {
+        titleLabel.text = music.data.title
+        singerLabel.text = music.data.singer
+        let url = URL(string: music.data.image)
         if let data = try? Data(contentsOf: url!) {
             image.image = UIImage(data: data)
         }
-        albumLabel.text = musicData.album
-        lyrics.text = musicData.lyrics
+        albumLabel.text = music.data.album
+        lyrics.text = music.data.lyrics
     }
 }
