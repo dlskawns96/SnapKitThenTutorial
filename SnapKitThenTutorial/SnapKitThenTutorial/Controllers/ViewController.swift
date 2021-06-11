@@ -8,17 +8,54 @@
 import UIKit
 import SnapKit
 import Then
+import AVFoundation
 
 class ViewController: UIViewController {
     
     private var musicViewModel: MusicViewModel!
     private var dataSource: Music!
     private var playingScreen: PlayingScreen?
+    private var audioPlayer: AVAudioPlayer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.callToViewModelForUIUpdate()
+    }
+    
+    // func to play sound
+    func playSound(url: URL) {
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url as URL)
+            audioPlayer.prepareToPlay()
+            audioPlayer.volume = 2.0
+            audioPlayer.play()
+        } catch let error as NSError {
+            print(error.localizedDescription)
+        } catch {
+            print("AVAudioPlayer init failed")
+        }
+    }
+    
+    func downloadFileFromURL() {
+        let url = URL(string: dataSource.data.file)
+        var downloadTask:URLSessionDownloadTask
+        
+        downloadTask = URLSession.shared.downloadTask(with: url!) { (url, response, error) in
+            self.playSound(url: url!)
+        }
+        downloadTask.resume()
+    }
+    
+    // MARK: - Data
+    func updateDataSource() {
+        if playingScreen == nil {
+            playingScreen = PlayingScreen(music: dataSource, view: view, viewController: self)
+            configureUI()
+            downloadFileFromURL()
+        } else {
+            playingScreen?.update(music: dataSource)
+        }
     }
     
     func callToViewModelForUIUpdate() {
@@ -29,15 +66,7 @@ class ViewController: UIViewController {
         }
     }
     
-    func updateDataSource() {
-        if playingScreen == nil {
-            playingScreen = PlayingScreen(music: dataSource, view: view)
-            configureUI()
-        } else {
-            playingScreen?.update(music: dataSource)
-        }
-    }
-    
+    // MARK: - Processing UI
     func configureUI() {
         view.backgroundColor = .white
         playingScreen?.titleLabel.snp.makeConstraints {
@@ -56,7 +85,8 @@ class ViewController: UIViewController {
             $0.height.equalTo((playingScreen?.image)!.snp.width)
         }
         playingScreen?.lyrics.snp.makeConstraints {
-            $0.top.equalTo((playingScreen?.image)!).offset(25)
+            $0.top.equalTo((playingScreen?.image.snp.bottom)!)
+            $0.height.equalTo((playingScreen?.lyricRowSize)! * 3.0)
             
             $0.leading.equalToSuperview().offset(10)
             $0.trailing.equalToSuperview().inset(10)
@@ -70,9 +100,10 @@ struct PlayingScreen {
     var singerLabel: UILabel
     var image: UIImageView
     var albumLabel: UILabel
-    var lyrics: UITextView
+    var lyrics: UIPickerView
+    var lyricRowSize: Double
     
-    init(music: Music, view: UIView) {
+    init(music: Music, view: UIView, viewController: ViewController) {
         titleLabel = UILabel().then {
             view.addSubview($0)
             $0.text = music.data.title
@@ -97,14 +128,12 @@ struct PlayingScreen {
             view.addSubview($0)
             $0.text = music.data.album
         }
-        lyrics = UITextView().then {
+        lyrics = UIPickerView().then {
             view.addSubview($0)
-            $0.backgroundColor = .yellow
-            $0.text = music.data.lyrics
-            $0.font = UIFont.systemFont(ofSize: 15)
-            $0.textContainer.maximumNumberOfLines = 2
-            
+            $0.dataSource = viewController
+            $0.delegate = viewController
         }
+        lyricRowSize = Double(lyrics.rowSize(forComponent: 0).height)
     }
     
     func update(music: Music) {
@@ -115,6 +144,21 @@ struct PlayingScreen {
             image.image = UIImage(data: data)
         }
         albumLabel.text = music.data.album
-        lyrics.text = music.data.lyrics
+        //        lyrics.text = music.data.lyrics
     }
+}
+
+extension ViewController: UIPickerViewDataSource, UIPickerViewDelegate {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return dataSource.lyrics.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return dataSource.lyrics[row].text
+    }
+    
 }
