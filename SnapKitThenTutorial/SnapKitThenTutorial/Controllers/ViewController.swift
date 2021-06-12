@@ -101,6 +101,7 @@ struct PlayingScreen {
     var albumLabel: UILabel
     var lyrics: UIPickerView
     var lyricRowSize: Double
+    var menuSet: MenuSet
     
     init(music: Music, view: UIView, viewController: ViewController) {
         titleLabel = UILabel().then {
@@ -121,7 +122,6 @@ struct PlayingScreen {
                 $0.layer.cornerRadius = 10
                 $0.layer.masksToBounds = true
             }
-            
         }
         albumLabel = UILabel().then {
             view.addSubview($0)
@@ -133,6 +133,7 @@ struct PlayingScreen {
             $0.delegate = viewController
         }
         lyricRowSize = Double(lyrics.rowSize(forComponent: 0).height)
+        menuSet = MenuSet(view: view, lyricView: lyrics)
     }
     
     func update(music: Music) {
@@ -144,6 +145,51 @@ struct PlayingScreen {
         }
         albumLabel.text = music.data.album
         //        lyrics.text = music.data.lyrics
+    }
+}
+
+struct MenuSet {
+    var playButton: UIButton
+    let nextButton: UIButton
+    let previousButton: UIButton
+    
+    init(view: UIView, lyricView: UIPickerView) {
+        playButton = UIButton().then {
+            view.addSubview($0)
+            $0.setImage(UIImage(named: "PlayButton"), for: .normal)
+            $0.contentMode = .scaleToFill
+            $0.snp.makeConstraints {
+                $0.top.equalTo(lyricView.snp.bottom).offset(20)
+            }
+        }
+        nextButton = UIButton().then {
+            view.addSubview($0)
+            $0.contentMode = .scaleToFill
+            $0.setImage(UIImage(named: "NextButton"), for: .normal)
+        }
+        previousButton = UIButton().then {
+            view.addSubview($0)
+            $0.contentMode = .scaleToFill
+            $0.setImage(UIImage(named: "PreviousButton"), for: .normal)
+        }
+        configureUI()
+    }
+    
+    func configureUI() {
+        playButton.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.width.height.equalTo(25)
+        }
+        nextButton.snp.makeConstraints {
+            $0.centerY.equalTo(playButton)
+            $0.width.height.equalTo(25)
+            $0.centerX.equalToSuperview().offset(50)
+        }
+        previousButton.snp.makeConstraints {
+            $0.centerY.equalTo(playButton)
+            $0.width.height.equalTo(25)
+            $0.centerX.equalToSuperview().offset(-50)
+        }
     }
 }
 
