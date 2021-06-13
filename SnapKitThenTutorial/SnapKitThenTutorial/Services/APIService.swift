@@ -19,4 +19,16 @@ class APIService: NSObject {
                 completion(musicData)
             }
     }
+    
+    func downloadMusic(url: URL,completion: @escaping (Data) -> ()) {
+        AF.download(url)
+            .downloadProgress { progress in
+                print("Download Progress: \(progress.fractionCompleted)")
+            }
+            .responseData { response in
+                if let data = response.value {
+                    completion(data)
+                }
+            }
+    }
 }

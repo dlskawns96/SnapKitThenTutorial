@@ -6,11 +6,13 @@
 //
 
 import Foundation
+import AVFoundation
 
 struct Music {
     var isPlaying: Bool
     var data: MusicData
     var lyrics: [ProcessedLyric]
+    var audioPlayer: AVAudioPlayer? = nil
 }
 
 struct MusicData: Codable {

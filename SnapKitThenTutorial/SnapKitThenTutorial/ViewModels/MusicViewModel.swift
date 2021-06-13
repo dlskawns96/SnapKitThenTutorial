@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AVFoundation
 
 class MusicViewModel: NSObject {
     private var apiService: APIService!
@@ -26,6 +27,19 @@ class MusicViewModel: NSObject {
     func callFuncToGetMusicData() {
         self.apiService.apiToGetMusicData { [self] (musicData) in
             self.music = Music(isPlaying: false, data: musicData, lyrics: processLyrics(lyrics: musicData.lyrics))
+            callFuncToDownloadMusic()
+        }
+    }
+    
+    func callFuncToDownloadMusic() {
+        self.apiService.downloadMusic(url: URL(string: music.data.file)!) { data in
+            do {
+                self.music.audioPlayer = try AVAudioPlayer(data: data)
+            } catch let error as NSError {
+                print(error.localizedDescription)
+            } catch {
+                print("AVAudioPlayer init failed")
+            }
         }
     }
     

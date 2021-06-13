@@ -118,7 +118,6 @@ class MenuSet {
     }
     
     @objc func playButtonAction() {
-        print("Play button clicked")
         onPlayButtonClicked()
     }
     

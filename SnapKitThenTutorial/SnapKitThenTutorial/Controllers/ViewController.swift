@@ -24,31 +24,16 @@ class ViewController: UIViewController {
     }
     
     func playMusic() {
-        audioPlayer.prepareToPlay()
-        audioPlayer.play()
+        dataSource.audioPlayer!.prepareToPlay()
+        dataSource.audioPlayer!.play()
         playingScreen?.menuSet.onPlayButtonClicked = pauseMusic
+        playingScreen?.menuSet.playButton.setImage(UIImage(named: "PauseButton"), for: .normal)
     }
     
     func pauseMusic() {
-        audioPlayer.pause()
+        dataSource.audioPlayer!.pause()
         playingScreen?.menuSet.onPlayButtonClicked = playMusic
-    }
-    
-    func downloadMusicFromURL() {
-        let url = URL(string: dataSource.data.file)
-        var downloadTask:URLSessionDownloadTask
-        
-        downloadTask = URLSession.shared.downloadTask(with: url!) { (url, response, error) in
-            do {
-                self.audioPlayer = try AVAudioPlayer(contentsOf: url! as URL)
-                self.playingScreen?.menuSet.onPlayButtonClicked = self.playMusic
-            } catch let error as NSError {
-                print(error.localizedDescription)
-            } catch {
-                print("AVAudioPlayer init failed")
-            }
-        }
-        downloadTask.resume()
+        playingScreen?.menuSet.playButton.setImage(UIImage(named: "PlayButton"), for: .normal)
     }
     
     // MARK: - Data
@@ -56,7 +41,7 @@ class ViewController: UIViewController {
         if playingScreen == nil {
             playingScreen = PlayingScreen(music: dataSource, view: view, viewController: self)
             configureUI()
-            downloadMusicFromURL()
+            self.playingScreen?.menuSet.onPlayButtonClicked = self.playMusic
         } else {
             playingScreen?.update(music: dataSource)
         }
