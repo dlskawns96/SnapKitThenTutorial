@@ -19,6 +19,7 @@
 		EA8676232667736F00F6CAA4 /* Music.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA8676222667736F00F6CAA4 /* Music.swift */; };
 		EA867625266775B000F6CAA4 /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA867624266775B000F6CAA4 /* APIService.swift */; };
 		EA867627266775C900F6CAA4 /* MusicViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA867626266775C900F6CAA4 /* MusicViewModel.swift */; };
+		EA98A6D926760AAC00FE8329 /* PlayingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA98A6D826760AAC00FE8329 /* PlayingScreen.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -50,6 +51,7 @@
 		EA8676222667736F00F6CAA4 /* Music.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Music.swift; sourceTree = "<group>"; };
 		EA867624266775B000F6CAA4 /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
 		EA867626266775C900F6CAA4 /* MusicViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicViewModel.swift; sourceTree = "<group>"; };
+		EA98A6D826760AAC00FE8329 /* PlayingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayingScreen.swift; sourceTree = "<group>"; };
 		ED7FCC0A397E516038FEE1A5 /* Pods_SnapKitThenTutorial.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SnapKitThenTutorial.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -88,6 +90,7 @@
 		EA8676012665B6F900F6CAA4 /* SnapKitThenTutorial */ = {
 			isa = PBXGroup;
 			children = (
+				EA98A6D726760A8D00FE8329 /* Views */,
 				EA86762126676E8400F6CAA4 /* Common */,
 				EA86762026676E7A00F6CAA4 /* Controllers */,
 				EA86761F26676E7000F6CAA4 /* Models */,
@@ -138,6 +141,14 @@
 				EA8676022665B6F900F6CAA4 /* AppDelegate.swift */,
 			);
 			path = Common;
+			sourceTree = "<group>";
+		};
+		EA98A6D726760A8D00FE8329 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				EA98A6D826760AAC00FE8329 /* PlayingScreen.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		EB8B39A6AAC8E2798FF72027 /* Pods */ = {
@@ -275,6 +286,7 @@
 			files = (
 				EA867627266775C900F6CAA4 /* MusicViewModel.swift in Sources */,
 				EA8676072665B6F900F6CAA4 /* ViewController.swift in Sources */,
+				EA98A6D926760AAC00FE8329 /* PlayingScreen.swift in Sources */,
 				EA867625266775B000F6CAA4 /* APIService.swift in Sources */,
 				EA8676032665B6F900F6CAA4 /* AppDelegate.swift in Sources */,
 				EA8676232667736F00F6CAA4 /* Music.swift in Sources */,

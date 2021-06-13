@@ -20,28 +20,33 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.callToViewModelForUIUpdate()
+        
     }
     
-    // func to play sound
-    func playSound(url: URL) {
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: url as URL)
-            audioPlayer.prepareToPlay()
-            audioPlayer.volume = 2.0
-            audioPlayer.play()
-        } catch let error as NSError {
-            print(error.localizedDescription)
-        } catch {
-            print("AVAudioPlayer init failed")
-        }
+    func playMusic() {
+        audioPlayer.prepareToPlay()
+        audioPlayer.play()
+        playingScreen?.menuSet.onPlayButtonClicked = pauseMusic
     }
     
-    func downloadFileFromURL() {
+    func pauseMusic() {
+        audioPlayer.pause()
+        playingScreen?.menuSet.onPlayButtonClicked = playMusic
+    }
+    
+    func downloadMusicFromURL() {
         let url = URL(string: dataSource.data.file)
         var downloadTask:URLSessionDownloadTask
         
         downloadTask = URLSession.shared.downloadTask(with: url!) { (url, response, error) in
-            self.playSound(url: url!)
+            do {
+                self.audioPlayer = try AVAudioPlayer(contentsOf: url! as URL)
+                self.playingScreen?.menuSet.onPlayButtonClicked = self.playMusic
+            } catch let error as NSError {
+                print(error.localizedDescription)
+            } catch {
+                print("AVAudioPlayer init failed")
+            }
         }
         downloadTask.resume()
     }
@@ -51,7 +56,7 @@ class ViewController: UIViewController {
         if playingScreen == nil {
             playingScreen = PlayingScreen(music: dataSource, view: view, viewController: self)
             configureUI()
-            downloadFileFromURL()
+            downloadMusicFromURL()
         } else {
             playingScreen?.update(music: dataSource)
         }
@@ -91,106 +96,6 @@ class ViewController: UIViewController {
             $0.trailing.equalToSuperview().inset(10)
         }
     }
-    
-}
-
-struct PlayingScreen {
-    var titleLabel: UILabel
-    var singerLabel: UILabel
-    var image: UIImageView
-    var albumLabel: UILabel
-    var lyrics: UIPickerView
-    var lyricRowSize: Double
-    var menuSet: MenuSet
-    
-    init(music: Music, view: UIView, viewController: ViewController) {
-        titleLabel = UILabel().then {
-            view.addSubview($0)
-            $0.text = music.data.title
-            $0.font = $0.font.withSize(20)
-        }
-        singerLabel = UILabel().then {
-            view.addSubview($0)
-            $0.text = music.data.singer
-        }
-        
-        let url = URL(string: music.data.image)
-        image = UIImageView().then {
-            view.addSubview($0)
-            if let data = try? Data(contentsOf: url!) {
-                $0.image = UIImage(data: data)
-                $0.layer.cornerRadius = 10
-                $0.layer.masksToBounds = true
-            }
-        }
-        albumLabel = UILabel().then {
-            view.addSubview($0)
-            $0.text = music.data.album
-        }
-        lyrics = UIPickerView().then {
-            view.addSubview($0)
-            $0.dataSource = viewController
-            $0.delegate = viewController
-        }
-        lyricRowSize = Double(lyrics.rowSize(forComponent: 0).height)
-        menuSet = MenuSet(view: view, lyricView: lyrics)
-    }
-    
-    func update(music: Music) {
-        titleLabel.text = music.data.title
-        singerLabel.text = music.data.singer
-        let url = URL(string: music.data.image)
-        if let data = try? Data(contentsOf: url!) {
-            image.image = UIImage(data: data)
-        }
-        albumLabel.text = music.data.album
-        //        lyrics.text = music.data.lyrics
-    }
-}
-
-struct MenuSet {
-    var playButton: UIButton
-    let nextButton: UIButton
-    let previousButton: UIButton
-    
-    init(view: UIView, lyricView: UIPickerView) {
-        playButton = UIButton().then {
-            view.addSubview($0)
-            $0.setImage(UIImage(named: "PlayButton"), for: .normal)
-            $0.contentMode = .scaleToFill
-            $0.snp.makeConstraints {
-                $0.top.equalTo(lyricView.snp.bottom).offset(20)
-            }
-        }
-        nextButton = UIButton().then {
-            view.addSubview($0)
-            $0.contentMode = .scaleToFill
-            $0.setImage(UIImage(named: "NextButton"), for: .normal)
-        }
-        previousButton = UIButton().then {
-            view.addSubview($0)
-            $0.contentMode = .scaleToFill
-            $0.setImage(UIImage(named: "PreviousButton"), for: .normal)
-        }
-        configureUI()
-    }
-    
-    func configureUI() {
-        playButton.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.width.height.equalTo(25)
-        }
-        nextButton.snp.makeConstraints {
-            $0.centerY.equalTo(playButton)
-            $0.width.height.equalTo(25)
-            $0.centerX.equalToSuperview().offset(50)
-        }
-        previousButton.snp.makeConstraints {
-            $0.centerY.equalTo(playButton)
-            $0.width.height.equalTo(25)
-            $0.centerX.equalToSuperview().offset(-50)
-        }
-    }
 }
 
 extension ViewController: UIPickerViewDataSource, UIPickerViewDelegate {
@@ -205,5 +110,4 @@ extension ViewController: UIPickerViewDataSource, UIPickerViewDelegate {
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return dataSource.lyrics[row].text
     }
-    
 }
