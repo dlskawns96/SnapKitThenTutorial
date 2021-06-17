@@ -15,15 +15,14 @@ class ViewController: UIViewController {
     private var musicViewModel: MusicViewModel!
     private var dataSource: Music!
     private var playingScreen: PlayingScreen?
-    private var audioPlayer: AVAudioPlayer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.callToViewModelForUIUpdate()
-        
     }
     
     func playMusic() {
+        dataSource.playButtonAction()
         dataSource.audioPlayer!.prepareToPlay()
         dataSource.audioPlayer!.play()
         playingScreen?.menuSet.onPlayButtonClicked = pauseMusic

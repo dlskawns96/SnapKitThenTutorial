@@ -13,6 +13,10 @@ struct Music {
     var data: MusicData
     var lyrics: [ProcessedLyric]
     var audioPlayer: AVAudioPlayer? = nil
+    
+    var playButtonAction = {}
+    var previousButtonAction = {}
+    var nextButtonAction = {}
 }
 
 struct MusicData: Codable {
